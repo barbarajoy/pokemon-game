@@ -2,7 +2,7 @@ const body = document.querySelector('body');
 const game = document.querySelector('.game');
 
 const count = document.querySelector('h1');
-const restartreser = document.querySelector('.reset');
+const reset = document.querySelector('.reset');
 
 const ash = document.querySelector('#ash');
 const charmander = document.querySelector('#charmander');
@@ -27,6 +27,48 @@ musicControl.addEventListener('click', (event) => {
   `${event.target.src}`.includes('on.png') ? audio.play() : audio.pause();
 })
 
+reset.addEventListener('click', () => {
+  window.location.reload();
+  reset.style.display = 'none';
+})
+
+function clearCharactersAndFinishGame() {
+  ash.style.display = 'none';
+  charmander.style.display = 'none';
+  zubat.style.display = 'none';
+  pikachu.style.display = 'none';
+
+  reset.style.display = 'block';
+  count.textContent = '';
+}
+
+let currentCount = 60;
+
+const interval = setInterval(() => {
+  if(currentCount <= 0) {
+    game.style.backgroundImage = "url('../assets/game-over.jpg')";
+    clearCharactersAndFinishGame();
+    clearInterval(interval);
+    return;
+  }
+
+  currentCount--;
+  count.textContent = currentCount;
+}, 1000)
+
+function finishGame() {
+  if(findCharmander && findPikachu && findZubat) {
+    clearCharactersAndFinishGame();
+
+    const timeOut = setTimeout(() => {
+      game.style.backgroundImage = "url('../assets/winner.jpg')";
+      clearInterval(interval);
+      clearTimeout(timeOut);
+      audio.pause();
+    }, 800);
+  }
+}
+
 function getRightPosition() {
   return parseInt(ash.style.right.split("px")) || 2;
 }
@@ -36,6 +78,7 @@ function getTopPosition() {
 }
 
 function verifyLookPokemon(to) {
+  finishGame();
 
   const pokemonRightPosition =
   to === 'ArrowLeft'
